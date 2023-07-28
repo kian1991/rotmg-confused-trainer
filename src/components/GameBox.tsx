@@ -68,38 +68,30 @@ const GameBox = (props: Props) => {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setPlayerPosition((oldPosition) => {
+				// if confused is true, use the confused direction enum
+				const CurrentDirection = confusedRef.current
+					? DirectionConfused
+					: Direction;
+
 				let newPosition = [...oldPosition];
-				if (
-					keyMap[confusedRef.current ? DirectionConfused.UP : Direction.UP] &&
-					oldPosition[0] > 0
-				) {
+				if (keyMap[CurrentDirection.UP] && oldPosition[0] > 0) {
 					newPosition[0] -= playerSpeedRef.current;
 				}
 				if (
-					keyMap[
-						confusedRef.current ? DirectionConfused.DOWN : Direction.DOWN
-					] &&
+					keyMap[CurrentDirection.DOWN] &&
 					oldPosition[0] < fieldSize[0] - PLAYER_SIZE
 				) {
 					newPosition[0] += playerSpeedRef.current;
 				}
-				if (
-					keyMap[
-						confusedRef.current ? DirectionConfused.LEFT : Direction.LEFT
-					] &&
-					oldPosition[1] > 0
-				) {
+				if (keyMap[CurrentDirection.LEFT] && oldPosition[1] > 0) {
 					newPosition[1] -= playerSpeedRef.current;
 				}
 				if (
-					keyMap[
-						confusedRef.current ? DirectionConfused.RIGHT : Direction.RIGHT
-					] &&
+					keyMap[CurrentDirection.RIGHT] &&
 					oldPosition[1] < fieldSize[1] - PLAYER_SIZE
 				) {
 					newPosition[1] += playerSpeedRef.current;
 				}
-				console.log(newPosition);
 				return newPosition as Position;
 			});
 		}, 1000 / 60); // 60 fps

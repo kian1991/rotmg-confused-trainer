@@ -108,14 +108,17 @@ const GameBox = (props: Props) => {
 				}}>
 				<Player playerPosition={playerPosition} speed={1} />
 			</div>
-			<div className={classes.settings}>
-				<input
-					type='checkbox'
-					id='confused'
-					name='confused'
-					value='confused'
-					onChange={() => setConfused(!confused)}></input>
-				<label htmlFor='confused'>Confused</label>
+			<div className='flex gap-2 mx-auto'>
+				<div className='flex gap-1 flex-col content-start'>
+					<label htmlFor='confused'>Confused</label>
+					<input
+						type='checkbox'
+						id='confused'
+						name='confused'
+						value='confused'
+						onChange={() => setConfused(!confused)}></input>
+				</div>
+
 				<input
 					type='range'
 					id='speed'

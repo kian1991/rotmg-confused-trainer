@@ -73,28 +73,8 @@ const GameBox = (props: Props) => {
 					? DirectionConfused
 					: Direction;
 
-				let newPosition = [...oldPosition];
-				if (keyMap[CurrentDirection.UP] && oldPosition[0] > 0) {
-					newPosition[0] -= playerSpeedRef.current;
-				}
-				if (
-					keyMap[CurrentDirection.DOWN] &&
-					oldPosition[0] < fieldSize[0] - PLAYER_SIZE
-				) {
-					newPosition[0] += playerSpeedRef.current;
-				}
-				if (keyMap[CurrentDirection.LEFT] && oldPosition[1] > 0) {
-					newPosition[1] -= playerSpeedRef.current;
-				}
-				if (
-					keyMap[CurrentDirection.RIGHT] &&
-					oldPosition[1] < fieldSize[1] - PLAYER_SIZE
-				) {
-					newPosition[1] += playerSpeedRef.current;
-				}
-				return newPosition as Position;
-			});
-		}, 1000 / 60); // 60 fps
+		gameStore.movePlayer(keyMap);
+
 		return () => clearInterval(interval);
 	}, []);
 

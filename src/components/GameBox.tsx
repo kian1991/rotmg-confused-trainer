@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import classes from './GameBox.module.css';
 import Player from './Player';
+import { GameEngineState, useGameEngine } from '../store/useGameEngine';
 type Props = {};
 
 type Position = [number, number];
@@ -27,22 +28,7 @@ enum DirectionConfused {
 const PLAYER_SIZE = 50;
 
 const GameBox = (props: Props) => {
-	const [playerPosition, setPlayerPosition] = useState<Position>([0, 0]);
-	const [fieldSize, setFieldSize] = useState<Position>([500, 500]);
-	const [playerSpeed, _setPlayerSpeed] = useState<number>(3);
-	const [confused, _setConfused] = useState<boolean>(false);
-
-	const playerSpeedRef = useRef(playerSpeed);
-	const setPlayerSpeed = (speed: number) => {
-		playerSpeedRef.current = speed;
-		_setPlayerSpeed(speed);
-	};
-
-	const confusedRef = useRef(confused);
-	const setConfused = (confused: boolean) => {
-		confusedRef.current = confused;
-		_setConfused(confused);
-	};
+	const gameStore: GameEngineState = useGameEngine();
 
 	const keyMap: { [key: string]: boolean } = {};
 
@@ -67,14 +53,21 @@ const GameBox = (props: Props) => {
 	// game loop
 	useEffect(() => {
 		const interval = setInterval(() => {
-			setPlayerPosition((oldPosition) => {
-				// if confused is true, use the confused direction enum
-				const CurrentDirection = confusedRef.current
-					? DirectionConfused
-					: Direction;
+			const CurrentDirections = Direction;
 
-		gameStore.movePlayer(keyMap);
-
+			if (keyMap[CurrentDirections.UP]) {
+				gameStore.movePlayer('up');
+			}
+			if (keyMap[CurrentDirections.DOWN]) {
+				gameStore.movePlayer('down');
+			}
+			if (keyMap[CurrentDirections.LEFT]) {
+				gameStore.movePlayer('left');
+			}
+			if (keyMap[CurrentDirections.RIGHT]) {
+				gameStore.movePlayer('right');
+			}
+		}, 1000 / 60); // 60 fps
 		return () => clearInterval(interval);
 	}, []);
 
@@ -83,10 +76,10 @@ const GameBox = (props: Props) => {
 			<div
 				className={classes.gamebox}
 				style={{
-					width: fieldSize[0] + 'px',
-					height: fieldSize[1] + 'px',
+					width: gameStore.fieldSize[0] + 'px',
+					height: gameStore.fieldSize[1] + 'px',
 				}}>
-				<Player playerPosition={playerPosition} speed={1} />
+				<Player playerPosition={gameStore.playerPosition} speed={1} />
 			</div>
 			<div className='flex gap-2 mx-auto'>
 				<div className='flex gap-1 flex-col content-start'>
@@ -96,7 +89,9 @@ const GameBox = (props: Props) => {
 						id='confused'
 						name='confused'
 						value='confused'
-						onChange={() => setConfused(!confused)}></input>
+						onChange={() =>
+							gameStore.setPlayerConfused(!gameStore.playerConfused)
+						}></input>
 				</div>
 
 				<input
@@ -105,9 +100,9 @@ const GameBox = (props: Props) => {
 					name='speed'
 					min='1'
 					max='10'
-					value={playerSpeed}
+					value={gameStore.playerSpeed}
 					onChange={(event) =>
-						setPlayerSpeed(parseInt(event.target.value))
+						gameStore.setPlayerSpeed(parseInt(event.target.value))
 					}></input>
 				<label htmlFor='speed'>Speed</label>
 			</div>
